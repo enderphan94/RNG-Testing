@@ -14,4 +14,4 @@ I urge you to read the documents carefully and precisely, otherwise, you might m
 
 # Wiki
 
-More details about the implementation here
+More details about the implementation are up there on the wiki page
