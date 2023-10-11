@@ -46,6 +46,8 @@ A formatted ASCII input file can accept either uints (integers in the range 0 to
 
 3. As it has been mentioned earlier, the Dieharder suite is more than just the Diehard tests cleaned up and given a pretty GPL'd source face in native C. Tests from the Statistical Test Suite (STS) developed by the National Institute for Standards and Technology (NIST) are being incorporated, as are new tests developed by rgb. Therefore, we would just need to pay attention to the Diehard test results are shown in the figure below
 
+Note: Increase the file size to check whether it passes all the tests.
+
 ## 2. NIST Test
 
 Some notes when doing NIST:
