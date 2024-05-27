@@ -1,25 +1,19 @@
-#Rscript swedishTest.R <file.bin> <number of raw>
 # Load necessary libraries
 library(tseries)
 
 # Function to read and process the raw binary data
-read_and_process_data <- function(file_path, num_draws) {
+read_and_process_data <- function(file_path) {
+  # Get the file size
+  file_size <- file.info(file_path)$size
+  
   # Open the file
   con <- file(file_path, "rb")
   
   # Read the raw binary data
-  binary_data <- readBin(con, what = integer(), size = 1, n = num_draws, signed = FALSE)
+  binary_data <- readBin(con, what = integer(), size = 1, n = file_size, signed = FALSE)
   close(con)
   
-  # Convert the raw binary data to numeric values
-  numeric_data <- as.numeric(binary_data)
-  
-  # Check if the length of numeric data matches the expected number of draws
-  if (length(numeric_data) != num_draws) {
-    stop("The length of the numeric data read does not match the expected number of draws.")
-  }
-  
-  return(numeric_data)
+  return(binary_data)
 }
 
 # Main function to handle command line arguments and perform the tests
@@ -28,16 +22,18 @@ main <- function() {
   args <- commandArgs(trailingOnly = TRUE)
   
   # Check if the correct number of arguments is provided
-  if (length(args) != 2) {
-    stop("Usage: Rscript script_name.R <file_path> <num_draws>")
+  if (length(args) != 1) {
+    stop("Usage: Rscript script_name.R <file_path>")
   }
   
   # Parse arguments
   file_path <- args[1]
-  num_draws <- as.numeric(args[2])
   
   # Read and process the binary data
-  data <- read_and_process_data(file_path, num_draws)
+  data <- read_and_process_data(file_path)
+  
+  # Number of draws
+  num_draws <- length(data)
   
   # Ljung-Box Test
   ts_data <- ts(data)
