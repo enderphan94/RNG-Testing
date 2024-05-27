@@ -207,3 +207,49 @@ To apply a chi-squared test in this context, we'll need to:
 `double_values_big <- readBin("filename.bin", what = double(), n = 12, endian = "big")`
 
 `print(double_values_big)`
+
+
+# Swedish Testing Script
+
+The following tests are implemented, the P-values are calculated and printed out:
+- Chi-square
+
+- Runs test
+
+- Autocorrelation
+
+`Rscript swedishTest.r <filename.bin> <numbers of raw>`
+
+Expected results:
+
+```
+EnderM2:target enderphan$ Rscript swedishTest.R 600mdata.bin 600000000
+Registered S3 method overwritten by 'quantmod':
+  method            from
+  as.zoo.data.frame zoo 
+[1] "Ljung-Box Test Result:"
+
+        Box-Ljung test
+
+data:  ts_data
+X-squared = 25.511, df = 20, p-value = 0.1826
+
+[1] "Ljung-Box Test P-value: 0.182567008052608"
+[1] "Chi-square Test Result:"
+
+        Chi-squared test for given probabilities
+
+data:  counts
+X-squared = 2.1336e-07, df = 1, p-value = 0.9996
+
+[1] "Chi-square Test P-value: 0.999631453146038"
+[1] "Runs Test Result:"
+
+        Runs Test
+
+data:  as.factor(binary_sequence)
+Standard Normal = 1.3778, p-value = 0.1683
+alternative hypothesis: two.sided
+
+[1] "Runs Test P-value: 0.168260062992897"
+```
