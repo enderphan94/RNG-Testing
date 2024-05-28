@@ -256,7 +256,7 @@ alternative hypothesis: two.sided
 [1] "Runs Test P-value: 0.168260062992897"
 ```
 
-Evaluation
+**Evaluation**
 
 The output of the Chi-square test you’ve received indicates a very high p-value (0.9996). This suggests that there is no significant difference between the observed and expected frequencies of 0s and 1s, implying that the binary data could be considered random with respect to the expected distribution (equal numbers of 0s and 1s).
 
