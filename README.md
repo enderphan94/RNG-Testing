@@ -14,6 +14,8 @@ I urge you to read the documents carefully and precisely, otherwise, you might m
 
 # The Tests
 
+In both the Dieharder and NIST test suites, the p-values are used to assess the randomness of the sequences. Generally, a p-value within the range of **0.01 to 0.99** is considered acceptable for a sequence to be considered random
+
 ## 1. Dieharder Test suite
 
 Please read this first and try to install the Diehard tool into your machine: http://webhome.phy.duke.edu/~rgb/General/dieharder.php
