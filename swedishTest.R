@@ -1,3 +1,8 @@
+#	1.	Ljung-Box Test: This test checks for autocorrelation in the data. A high p-value (typically greater than 0.05) indicates that there is no significant autocorrelation, suggesting randomness.
+#	2.	Chi-square Test: This test checks if the observed frequencies of 0s and 1s match the expected frequencies (50% for each). A high p-value (typically greater than 0.05) indicates that the observed distribution does not significantly differ from the expected distribution, suggesting randomness.
+#	3.	Runs Test: This test checks for randomness in the sequence of data points by looking at the occurrence of runs (consecutive sequences of similar elements). A high p-value (typically greater than 0.05) indicates that the sequence of data points appears random.
+# Sum: If all three tests return high p-values (typically above 0.05), you can confidently say that the binary data in your .bin file appears to be random. Conversely, if any of the tests return low p-values, this might indicate some non-randomness in the data.
+# usage: Rscript swedishTest.R <bin-file.bin> <numbers of raw>[optional]
 # Load necessary libraries
 library(tseries)
 
