@@ -287,3 +287,7 @@ Given the p-value you provided for the Chi-square test, let’s summarize how to
 * Runs Test Result: A high p-value indicates that the sequence of 0s and 1s appears random without significant patterns.
 
 If all three tests return high p-values (typically above 0.05), you can confidently say that the binary data in your .bin file appears to be random. Conversely, if any of the tests return low p-values, this might indicate some non-randomness in the data.
+
+* Pass: If the p-value is in the range of 0.01 to 0.99.
+* Weak: If the p-value is between 0.001 to 0.01 or between 0.99 to 0.999.
+* Fail: If the p-value is less than 0.001 or greater than 0.999.
