@@ -6,6 +6,9 @@
 # Load necessary libraries
 library(tseries)
 
+# Load necessary libraries
+library(tseries)
+
 # Function to read and process the raw binary data
 read_and_process_data <- function(file_path) {
   # Get the file size
@@ -19,6 +22,17 @@ read_and_process_data <- function(file_path) {
   close(con)
   
   return(binary_data)
+}
+
+# Function to assess the p-value
+assess_p_value <- function(p_value) {
+  if (p_value < 0.001 || p_value > 0.999) {
+    return("Fail")
+  } else if (p_value < 0.01 || p_value > 0.99) {
+    return("Weak")
+  } else {
+    return("Pass")
+  }
 }
 
 # Main function to handle command line arguments and perform the tests
@@ -46,12 +60,13 @@ main <- function() {
   box_test_result <- Box.test(ts_data, lag = lag_value, type = "Ljung-Box")
   
   # Print the Ljung-Box test result
-  print("Ljung-Box Test Result:")
+  print("====== Ljung-Box Test ======:")
   print(box_test_result)
   
   # Extract and print the p-value for Ljung-Box test
   p_value_lb <- box_test_result$p.value
   print(paste("Ljung-Box Test P-value:", p_value_lb))
+  print(paste("Assessment:", assess_p_value(p_value_lb)))
   
   # Chi-square Test
   binary_data <- as.integer(data)
@@ -67,25 +82,30 @@ main <- function() {
   chi_square_test <- chisq.test(counts, p = expected_counts / sum(expected_counts))
   
   # Print the Chi-square test result
-  print("Chi-square Test Result:")
+  print("====== Chi-square ======:")
   print(chi_square_test)
   
   # Extract and print the p-value for Chi-square test
   p_value_chi <- chi_square_test$p.value
   print(paste("Chi-square Test P-value:", p_value_chi))
+  print(paste("Assessment:", assess_p_value(p_value_chi)))
   
   # Runs Test
   binary_sequence <- ifelse(data > 0, 1, 0)
   runs_result <- runs.test(as.factor(binary_sequence))
   
   # Print the Runs test result
-  print("Runs Test Result:")
+  print("====== Runs Test ======:")
   print(runs_result)
   
   # Extract and print the p-value for Runs test
   p_value_runs <- runs_result$p.value
   print(paste("Runs Test P-value:", p_value_runs))
+  print(paste("Assessment:", assess_p_value(p_value_runs)))
 }
+
+# Run the main function
+main()
 
 # Run the main function
 main()
