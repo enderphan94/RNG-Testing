@@ -2,9 +2,9 @@
 #	2.	Chi-square Test: This test checks if the observed frequencies of 0s and 1s match the expected frequencies (50% for each). A high p-value (typically greater than 0.05) indicates that the observed distribution does not significantly differ from the expected distribution, suggesting randomness.
 #	3.	Runs Test: This test checks for randomness in the sequence of data points by looking at the occurrence of runs (consecutive sequences of similar elements). A high p-value (typically greater than 0.05) indicates that the sequence of data points appears random.
 # Sum: If all three tests return high p-values (typically above 0.05), you can confidently say that the binary data in your .bin file appears to be random. Conversely, if any of the tests return low p-values, this might indicate some non-randomness in the data.
-# 1.	Pass: If the p-value is in the range of 0.01 to 0.99.
-# 2.	Weak: If the p-value is between 0.001 to 0.01 or between 0.99 to 0.999.
-#	3.	Fail: If the p-value is less than 0.001 or greater than 0.999.
+# 	•	Fail: P-value < 0.01 or P-value > 0.99
+#	•	Weak: 0.01 ≤ P-value < 0.05 or 0.95 ≤ P-value ≤ 0.99
+#	•	Pass: 0.05 ≤ P-value ≤ 0.95
 # usage: Rscript swedishTest.R <bin-file.bin> <numbers of raw>[optional]
 # Load necessary libraries
 library(tseries)
@@ -29,9 +29,9 @@ read_and_process_data <- function(file_path) {
 
 # Function to assess the p-value
 assess_p_value <- function(p_value) {
-  if (p_value < 0.001 || p_value > 0.999) {
+  if (p_value < 0.01 || p_value > 0.99) {
     return("Fail")
-  } else if (p_value < 0.01 || p_value > 0.99) {
+  } else if (p_value < 0.05 || p_value > 0.95) {
     return("Weak")
   } else {
     return("Pass")
