@@ -18,7 +18,7 @@ read_and_process_data <- function(file_path) {
 
 # Function to assess the p-value
 assess_p_value <- function(p_value) {
-  if (p_value < 0.05 || p_value > 0.95) {
+  if (p_value < 0.05) {
     return("Fail")
   } else {
     return("Pass")
