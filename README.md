@@ -12,9 +12,15 @@ I urge you to read the documents carefully and precisely, otherwise, you might m
 
 **Chi-square:** I'm using R-studio or matlab (https://statsandr.com/blog/chi-square-test-of-independence-in-r/) and (https://www.mathworks.com/help/stats/chi2gof.html)
 
-# The Tests
+# P-value Intepretation
 
-In both the Dieharder and NIST test suites, the p-values are used to assess the randomness of the sequences. Generally, a p-value within the range of **0.01 to 0.99** is considered acceptable for a sequence to be considered random
+The test statistic is used to calculate a P-value that summarizes the strength of the evidence against the null hypothesis. For these tests, each P-value is the probability that a perfect random number generator would have produced a sequence less random than the sequence that was tested, given the kind of non-randomness assessed by the test. If a P-value for a test is determined to be equal to 1, then the sequence appears to have perfect randomness. A P-value of zero indicates that the sequence appears to be completely non-random. A significance level (α) can be chosen for the tests. If P-value ≥ α, then the null hypothesis is accepted; i.e., the sequence appears to be random. If P-value < α, then the null hypothesis is rejected; i.e., the sequence appears to be non-random. 
+
+We will use a 5% significance level (α = 0.05), indicating a 95% confidence level:
+
+* α = 0.05: A P-value ≥ 0.05 suggests randomness with 95% confidence. A P-value < 0.05 indicates non-randomness with 95% confidence.
+
+# The Tests
 
 ## 1. Dieharder Test suite
 
@@ -280,14 +286,11 @@ However, to determine the randomness of the data thoroughly, it’s best to look
 2. Chi-square Test: This test checks if the observed frequencies of 0s and 1s match the expected frequencies (50% for each). A high p-value (typically greater than 0.05) indicates that the observed distribution does not significantly differ from the expected distribution, suggesting randomness.
 3. Runs Test: This test checks for randomness in the sequence of data points by looking at the occurrence of runs (consecutive sequences of similar elements). A high p-value (typically greater than 0.05) indicates that the sequence of data points appears random.
 
-Given the p-value you provided for the Chi-square test, let’s summarize how to interpret the results from all three tests:
+**P-value Intepretation**
 
-* Ljung-Box Test Result: If the p-value is high, it suggests no significant autocorrelation.
-* Chi-square Test Result: A high p-value suggests that the frequency of 0s and 1s does not significantly deviate from what is expected in a random sequence.
-* Runs Test Result: A high p-value indicates that the sequence of 0s and 1s appears random without significant patterns.
+The test statistic is used to calculate a P-value that summarizes the strength of the evidence against the null hypothesis. For these tests, each P-value is the probability that a perfect random number generator would have produced a sequence less random than the sequence that was tested, given the kind of non-randomness assessed by the test. If a P-value for a test is determined to be equal to 1, then the sequence appears to have perfect randomness. A P-value of zero indicates that the sequence appears to be completely non-random. A significance level (α) can be chosen for the tests. If P-value ≥ α, then the null hypothesis is accepted; i.e., the sequence appears to be random. If P-value < α, then the null hypothesis is rejected; i.e., the sequence appears to be non-random. 
 
-If all three tests return high p-values (typically above 0.05), you can confidently say that the binary data in your .bin file appears to be random. Conversely, if any of the tests return low p-values, this might indicate some non-randomness in the data.
+We will use a 5% significance level (α = 0.05), indicating a 95% confidence level:
 
-* Pass: If the p-value is in the range of 0.01 to 0.99.
-* Weak: If the p-value is between 0.001 to 0.01 or between 0.99 to 0.999.
-* Fail: If the p-value is less than 0.001 or greater than 0.999.
+* α = 0.05: A P-value ≥ 0.05 suggests randomness with 95% confidence. A P-value < 0.05 indicates non-randomness with 95% confidence.
+
