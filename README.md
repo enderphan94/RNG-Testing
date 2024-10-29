@@ -109,6 +109,47 @@ Since the data consists of a long sequence of zeroes and ones, 0 was chosen. Giv
 
 Once the testing process is complete, the empirical results can be found in the experiments/ subdirectory.
 
+**ERRORS**
+
+***igamc: UNDERFLOW***
+
+The code is here: https://github.com/terrillmoore/NIST-Statistical-Test-Suite/blob/07cd57730402e9723b03f4775100773c36bfdc1b/sts/src/cephes.c#L32
+
+The "igamc: UNDERFLOW" error occurs in the NIST Statistical Test Suite when the values being processed become too small for the statistical calculations used, especially in functions involving exponentials or logarithms, like the **complemented incomplete gamma function** igamc. Let’s analyze the primary causes based on the code and why increasing the max value resolves the issue.
+
+**1\. Understanding the Complemented Incomplete Gamma Function (igamc)**
+
+•The **complemented incomplete gamma function**, igamc(a, x), is sensitive to small values of x, especially when a is relatively larger.
+
+•Inside the function, there is a term ax = a \* log(x) - x - lgam(a). If ax becomes very negative, exp(ax) (the exponential of ax) can underflow, leading to values smaller than floating-point precision can represent, resulting in a zero or underflow.
+
+•The function has a threshold where, if ax < -MAXLOG (around -709), it returns 0.0 and logs "igamc: UNDERFLOW".
+
+**2\. Why Small max Values Cause Underflow**
+
+•When max is set to a small number (e.g., 100), the range of generated random numbers is constrained to small values, leading to bitstreams that have fewer high bits and more zeros.
+
+•This bit-level distribution increases the likelihood of smaller values in the statistical tests, especially in bit patterns that may repeat or produce lower totals, causing x to be small in the igamc calculation.
+
+•The statistical tests within NIST rely on having a sufficiently diverse distribution of bit values (both high and low). When constrained to smaller numbers, the lack of high bits skews the bit distribution, increasing the chances of underflow in functions expecting a uniform spread of values.
+
+**3\. How Increasing max to Full 32-Bit Range Fixes the Issue**
+
+•When max is set to the full 32-bit range (4294967295), the generated numbers fully utilize all bits in the 32-bit space, creating a highly uniform distribution of 0s and 1s across the bitstreams.
+
+•This balanced bit distribution means x values in the statistical tests are spread out over a broader range, reducing the likelihood of x being too small.
+
+•As a result, ax = a \* log(x) - x - lgam(a) is less likely to reach values that trigger underflow, allowing the igamc calculations to proceed without errors.
+
+**Summary**
+
+The "igamc: UNDERFLOW" error stems from:
+
+1.**Small** max **Values**: Constraining max produces lower-bit values in the bitstream, creating a non-uniform distribution that skews statistical calculations.
+
+2.**Sensitive Statistical Calculations**: Functions like igamc rely on a broad spread of values; small or zero-heavy distributions increase the risk of underflow.
+
+If you must use min/max values, set them broadly enough to allow for a sufficiently diverse bit pattern distribution. Ideally, use ranges close to the maximum bit width, e.g., setting max to 2^32 - 1 in a 32-bit system.
 
 ## 3. Chi-square Test
 1. Install R via brew
