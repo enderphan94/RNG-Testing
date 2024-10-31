@@ -151,6 +151,10 @@ The "igamc: UNDERFLOW" error stems from:
 
 If you must use min/max values, set them broadly enough to allow for a sufficiently diverse bit pattern distribution. Ideally, use ranges close to the maximum bit width, e.g., setting max to 2^32 - 1 in a 32-bit system.
 
+Other answers: 
+
+- https://crypto.stackexchange.com/questions/87242/nist-statistical-test-segmentation-fault-core-dumped
+
 ## 3. Chi-square Test
 1. Install R via brew
 
