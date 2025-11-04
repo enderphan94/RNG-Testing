@@ -278,6 +278,12 @@ To apply a chi-squared test in this context, we'll need to:
 
 # Swedish Testing Script
 
+Install library:
+```
+# install tseries to your user library
+Rscript -e 'dir.create(Sys.getenv("R_LIBS_USER"), recursive=TRUE, showWarnings=FALSE);
+install.packages("tseries", repos="https://cloud.r-project.org", dependencies=TRUE)'
+```
 The following tests are implemented, the P-values are calculated and printed out:
 - Chi-square
 
