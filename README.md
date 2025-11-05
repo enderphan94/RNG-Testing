@@ -43,18 +43,47 @@ A formatted ASCII input file can accept either uints (integers in the range 0 to
 [Download](https://webhome.phy.duke.edu/~rgb/General/dieharder.php) the latest version and install it
 
 **Implementation**
-1. Compiling the RNG code to get the output file which should be presented as an ASCII format in this case. If the output file saved in the binary format, we can just switch the option during the execution to binary “-g 201” or convert the output file to ASCII format by using the python script. I personally usually use binary format for the testing.
 
-2. Run command 
-`Dieharder -a -g 202 -f output.txt`
+For Dieharder, using the correct options and having sufficient input data is very important. You need **14+ gigabytes** of input data to run dieharder with a small number of rewinds. Having a small data file input feeds the same data multiple times into the test and often gives false ‘FAILED’ results. I run most dieharder tests with:
 
-* -a runs all the tests with standard/default options to create a user-controllable report
-* -f filename - generators 201 or 202 permit either raw binary or formatted  ASCII  numbers  to  be read in from a file for testing
-* -g generator number - selects a specific generator for testing
+```
+dieharder -g 201 -k 2 -Y 1 -f FILENAME
 
-3. As it has been mentioned earlier, the Dieharder suite is more than just the Diehard tests cleaned up and given a pretty GPL'd source face in native C. Tests from the Statistical Test Suite (STS) developed by the National Institute for Standards and Technology (NIST) are being incorporated, as are new tests developed by rgb. Therefore, we would just need to pay attention to the Diehard test results are shown in the figure below
+-g 201 = use external file as input
 
-Note: Increase the file size to check whether it passes all the tests.
+-k 2 = use maximum accuracy to machine precision (slower)
+
+-Y 1 = resolve ambiguity mode = reruns ‘WEAK’ results until PASSED or FAILED result is obtained
+
+-f FILENAME = the name of the file to use for the source
+```
+As with other statistical tests for random number generators, it is expected that each dieharder test gets a ‘FAILED’ result a certain percentage of the time.
+
+A single of small number of failures on a particular test is not a cause to label the generator as bad. For a ‘FAILED’ result, a particular test can be re-ran on the same input file with a larger block size to show that the failure is an anomaly.
+
+I use the following to re-run a single particular dieharder test and increase the p_value multiplier (-m) and/or use split to chop up the input file into chunks then test each one separately (re-running the same test on the same input will get the same result and not tell you anything about the rest of the file)
+
+```
+dieharder -d 201 -g 201 -k 2 -Y 1 -m 2 -f FILENAME
+
+-d 201 = test number to run — see below
+
+-g 201 = use external file as input
+
+-k 2 = use maximum accuracy to machine precision (slower)
+
+-Y 1 = resolve ambiguity mode = reruns ‘WEAK’ results until PASSED or FAILED result is obtained
+
+-m 2 = use twice the number of p_samples as input
+
+-f FILENAME = the name of the file to use for the source
+```
+You can read more here:
+
+- https://manpages.ubuntu.com/manpages/jammy/man1/dieharder.1.html#:~:text=The%20simplest%20way%20to%20use,Go%20ahead%20and%20try%20this
+- https://wiki.cryptech.is/randomness-testing-tools.html
+- https://ubld.it/understanding-dieharder-chi-square-fips-140-2-results/
+- https://rurban.github.io/dieharder/manual/dieharder.pdf
 
 ## 2. NIST Test
 
