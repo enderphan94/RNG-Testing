@@ -1,114 +1,50 @@
-#	1.	Ljung-Box Test: This test checks for autocorrelation in the data. A high p-value (typically greater than 0.05) indicates that there is no significant autocorrelation, suggesting randomness.
-#	2.	Chi-square Test: This test checks if the observed frequencies of 0s and 1s match the expected frequencies (50% for each). A high p-value (typically greater than 0.05) indicates that the observed distribution does not significantly differ from the expected distribution, suggesting randomness.
-#	3.	Runs Test: This test checks for randomness in the sequence of data points by looking at the occurrence of runs (consecutive sequences of similar elements). A high p-value (typically greater than 0.05) indicates that the sequence of data points appears random.
-# Sum: If all three tests return high p-values (typically above 0.05), you can confidently say that the binary data in your .bin file appears to be random. Conversely, if any of the tests return low p-values, this might indicate some non-randomness in the data.
-# 	•	Fail: P-value < 0.01 or P-value > 0.99
-#	•	Weak: 0.01 ≤ P-value < 0.05 or 0.95 ≤ P-value ≤ 0.99
-#	•	Pass: 0.05 ≤ P-value ≤ 0.95
-# usage: Rscript swedishTest.R <bin-file.bin> <numbers of raw>[optional]
-# Load necessary libraries
-library(tseries)
+# Usage: Rscript swedishTest.R <file.bin>
+# Requires: install.packages("tseries")
 
-# Load necessary libraries
-library(tseries)
+suppressWarnings(suppressMessages(library(tseries)))
 
-# Function to read and process the raw binary data
-read_and_process_data <- function(file_path) {
-  # Get the file size
-  file_size <- file.info(file_path)$size
-  
-  # Open the file
+# Read file as raw bytes -> expand to bits (MSB-first)
+read_bits_msb <- function(file_path) {
+  nbytes <- file.info(file_path)$size
   con <- file(file_path, "rb")
-  
-  # Read the raw binary data
-  binary_data <- readBin(con, what = integer(), size = 1, n = file_size, signed = FALSE)
-  close(con)
-  
-  return(binary_data)
+  on.exit(close(con))
+  r <- readBin(con, what = "raw", n = nbytes)
+  b <- as.integer(rawToBits(r))       # LSB-first, 8 bits per byte
+  dim(b) <- c(8, length(r))           # 8 rows x nbytes cols
+  b <- b[8:1, , drop = FALSE]         # flip to MSB-first per byte
+  as.vector(b)                        # column-wise vector of 0/1
 }
 
-# Function to assess the p-value
-assess_p_value <- function(p_value) {
-  if (p_value < 0.01 || p_value > 0.99) {
-    return("Fail")
-  } else if (p_value < 0.05 || p_value > 0.95) {
-    return("Weak")
-  } else {
-    return("Pass")
-  }
-}
 
-# Main function to handle command line arguments and perform the tests
 main <- function() {
-  # Get command line arguments
   args <- commandArgs(trailingOnly = TRUE)
-  
-  # Check if the correct number of arguments is provided
-  if (length(args) != 1) {
-    stop("Usage: Rscript script_name.R <file_path>")
-  }
-  
-  # Parse arguments
+  if (length(args) != 1) stop("Usage: Rscript swedishTest.R <file.bin>")
   file_path <- args[1]
   
-  # Read and process the binary data
-  data <- read_and_process_data(file_path)
+  bits <- read_bits_msb(file_path)
+  n <- length(bits)
+  cat(sprintf("Read %d bits (MSB-first)\n", n))
   
-  # Number of draws
-  num_draws <- length(data)
-  
-  # Ljung-Box Test
-  ts_data <- ts(data)
-  lag_value <- floor(log(length(ts_data)))
-  box_test_result <- Box.test(ts_data, lag = lag_value, type = "Ljung-Box")
-  
-  # Print the Ljung-Box test result
-  print("====== Ljung-Box Test ======:")
-  print(box_test_result)
-  
-  # Extract and print the p-value for Ljung-Box test
-  p_value_lb <- box_test_result$p.value
-  print(paste("Ljung-Box Test P-value:", p_value_lb))
-  print(paste("Assessment:", assess_p_value(p_value_lb)))
-  
-  # Chi-square Test
-  binary_data <- as.integer(data)
-  
-  # Count occurrences of 0s and 1s
-  counts <- table(factor(binary_data, levels = 0:1))
-  
-  # Ensure counts include both 0s and 1s
-  counts <- as.integer(counts)
-  
-  # Perform the Chi-square test
-  expected_counts <- rep(num_draws / 2, 2) # Expecting equal counts of 0s and 1s
-  chi_square_test <- chisq.test(counts, p = expected_counts / sum(expected_counts))
-  
-  # Print the Chi-square test result
-  print("====== Chi-square ======:")
-  print(chi_square_test)
-  
-  # Extract and print the p-value for Chi-square test
-  p_value_chi <- chi_square_test$p.value
-  print(paste("Chi-square Test P-value:", p_value_chi))
-  print(paste("Assessment:", assess_p_value(p_value_chi)))
-  
-  # Runs Test
-  binary_sequence <- ifelse(data > 0, 1, 0)
-  runs_result <- runs.test(as.factor(binary_sequence))
-  
-  # Print the Runs test result
-  print("====== Runs Test ======:")
-  print(runs_result)
-  
-  # Extract and print the p-value for Runs test
-  p_value_runs <- runs_result$p.value
-  print(paste("Runs Test P-value:", p_value_runs))
-  print(paste("Assessment:", assess_p_value(p_value_runs)))
+  # --- 1) Monobit Chi-square test (0/1 equally likely) ---
+  counts <- table(factor(bits, levels = 0:1))
+  chi <- suppressWarnings(chisq.test(counts, p = c(0.5, 0.5)))
+  p_chi <- chi$p.value
+  cat("\nMonobit Chi-square:\n")
+  print(chi)
+
+  # --- 2) Wald–Wolfowitz Runs test on the bit sequence ---
+  # tseries::runs.test accepts a two-level factor for a dichotomous sequence
+  runs <- runs.test(factor(bits))
+  p_runs <- runs$p.value
+  cat("\nRuns test (Wald–Wolfowitz) on bits:\n")
+  print(runs)
+
+  # --- 3) Ljung–Box test on the bit sequence ---
+  h <- max(1, floor(10 * log10(n)))
+  lb <- Box.test(ts(bits), lag = h, type = "Ljung-Box")
+  p_lb <- lb$p.value
+  cat(sprintf("\nLjung–Box (lag=%d) on bits:\n", h))
+  print(lb)
 }
 
-# Run the main function
-main()
-
-# Run the main function
 main()
